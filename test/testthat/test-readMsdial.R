@@ -1,3 +1,4 @@
+library(QFeatures)
 source("R/readMsdial.R") 
 
 qf <- readMSDial("data/Metabolite_profile_showcase.txt")
@@ -6,8 +7,8 @@ counts <- sapply(18:23,function(i) as.numeric(metaboliteProfile[,i]))
 
 
 test_that("Sum of Intensities is correct", {
-  
-  counts <- sapply(18:23,function(i) as.numeric(metaboliteProfile[,i]))
+  count_cols <- grep("TRI|LVS", names(metaboliteProfile))
+  counts <- sapply(count_cols,function(i) as.numeric(metaboliteProfile[,i]))
   
   sum1 <- sum(colSums(assay(qf)))
   sum2 <- sum(counts)
@@ -31,12 +32,9 @@ test_that("Rows and Columns are correct", {
   colNames1 <- c(colnames(rowData(qf))[[1]], rownames(colData(qf)))
   colNames2 <- colnames(metaboliteProfile)
   
-  l1 <- length(colNames1[!(colNames2 %in% colNames1)])
-  l2 <- length(colNames2[!(colNames1 %in% colNames2)])
+  l1 <- length(colNames2[!(colNames2 %in% colNames1)])
+  l2 <- length(colNames1[!(colNames1 %in% colNames2)])
   
   expect_equal(l1, l2)
   expect_equal(l2, 0)
 })
-
-
-
