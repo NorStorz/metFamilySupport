@@ -4,7 +4,6 @@ library(purrr)
 library(QFeatures)
 library(SummarizedExperiment)
 
-file <- "data/rye test data all features.xlsx"
 
 readMetaboscape <- function(file, version){
   
@@ -19,7 +18,7 @@ readMetaboscape <- function(file, version){
   
   
   
-  ###COUNTS
+  # Extract ids and counts data
   ids <- table[[1]]
   countsRaw <- table[,colIdsSamples]
   countsNumeric <- countsRaw %>%
@@ -27,33 +26,28 @@ readMetaboscape <- function(file, version){
   counts <- as.matrix(countsNumeric)
   rownames(counts) <- ids
   
-  ###ROWDATA
+  # Extract rowData
   rowData <- DataFrame(table[,!colIdsSamples])
   
-  ###COLDATA
-  
+  # Extract colData from sample Names
   sampleNames <- colnames(table[,colIdsSamples])
   colDataRaw <- sapply(sampleNames, function(x) {
+    # find position of the first character before the Run number
     pos <- max(gregexpr("[^0-9]", x)[[1]])
-    c(substr(x, 1, (pos - 1)), substr(x, pos + 1, nchar(x)))
+      c(substr(x, 1, (pos - 1)), substr(x, pos + 1, nchar(x)))
   })
-  
-  "Injection order" <- as.numeric(colDataRaw[2,])
-  result_df <- DataFrame(result)
-  colnames(result_df) <- c("First Part", "Second Part")
-
-  ### MERGE TO QFEATURES
+  colData <- DataFrame("Injection order" = colDataRaw[2,],
+                       "Sample name" = colDataRaw[1,])
+                    
+  # Create SummarizedExperiment object
   sumExp <- SummarizedExperiment(assays = list(counts = counts),
                                  rowData = rowData,
                                  colData = colData)
 
+  # Create QFeatures object
   qf <- QFeatures()
   qf <- addAssay(qf, sumExp, name = "exampleAssay") 
   qf
 }
 
-qf <- readMetaboscape("data/rye test data all features.xlsx")
-head(assay(qf))
-colData(qf)
-
-
+#qf <- readMetaboscape("data/rye test data all features.xlsx")
