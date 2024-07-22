@@ -3,7 +3,7 @@
   
   readMSDial <- function(file, version){
     table <- read.table(file, fill = TRUE, sep = "\t",
-                        quote = "", header = TRUE)
+                        quote = "", header = FALSE)
     
     # Identify the starting row and column of the data
     startRow <- which(table[, 1] != "")[1]
@@ -22,17 +22,16 @@
     colnames(counts) <- as.character(countsRaw[1, -1])
     rownames(counts) <- ids
     
-    
-    length(ids)
+    # Ensure row names of colData match counts column names
+    colData <- DataFrame(t(colDataRaw[-nrow(colDataRaw), -1]))
+    rownames(colData) <- as.character(colDataRaw[nrow(colDataRaw), -1])
+    colnames(colData) <- as.character(colDataRaw[-nrow(colDataRaw), 1])
 
     # Ensure row names of rowData match counts row names
     rowData <- DataFrame(rowDataRaw[-1, ], row.names = ids)
     colnames(rowData) <- as.character(rowDataRaw[1,])
 
-    # Ensure row names of colData match counts column names
-    colData <- DataFrame(t(colDataRaw[-nrow(colDataRaw), -1]))
-    rownames(colData) <- as.character(colDataRaw[nrow(colDataRaw), -1])
-    colnames(colData) <- as.character(colDataRaw[-nrow(colDataRaw), 1])
+    
     
     # Create SummarizedExperiment object
    
@@ -48,9 +47,6 @@
     ##TODO: name
   }
   
-  qf <- readMSDial("data/Metabolite_profile_showcase.txt")
-  head(assay(qf))
-  
-  
-  
- str( metaboliteProfile )
+ qf <- readMSDial("data/Metabolite_profile_showcase.txt")
+ head(assay(qf))
+colData(qf)
