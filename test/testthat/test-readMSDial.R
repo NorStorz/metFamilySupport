@@ -1,9 +1,8 @@
-library(QFeatures)
-source("R/readMsdial.R") 
+#library(QFeatures)
+#source("R/readMsdial.R") 
 
 qf <- readMSDial("data/Metabolite_profile_showcase.txt")
-
-
+#TODO: use system.file to get the path of the file
 test_that("Sum of Intensities is correct", {
   
   sumQf <- sum(colSums(assay(qf)))

@@ -19,13 +19,21 @@ library(SummarizedExperiment)
 #'     \item Row data (feature metadata) extracted from the input file.
 #'     \item Column data (sample metadata) extracted from the sample names, including injection order and sample name.
 #'   }
+#'   
+#' @importFrom readxl read_xlsx
+#' @importFrom dplyr mutate across
+#' @importFrom purrr map_dfc
+#' @importFrom QFeatures QFeatures
+#' @importFrom SummarizedExperiment SummarizedExperiment
+#' @importFrom S4Vectors DataFrame
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' # Assuming you have a Metaboscape output file named "data.xlsx":
-#' qf <- readMetaboscape("data.xlsx")
+#' qf <- readMetaboscape("data.xlsx") #TODO: System file 
+#'
 #' 
 #' # Examine the structure of the resulting QFeatures object
 #' qf
@@ -40,23 +48,17 @@ library(SummarizedExperiment)
 #' colData(qf)
 #' }
 #'
-#' @importFrom readxl read_xlsx
-#' @importFrom dplyr mutate across
-#' @importFrom purrr map_dfc
-#' @importFrom QFeatures QFeatures
-#' @importFrom SummarizedExperiment SummarizedExperiment
-#' @importFrom S4Vectors DataFrame
 #'
 #' @details
-
 #' @note 
 #'
 #' @seealso 
 #' \code{\link[QFeatures]{QFeatures}} for more information on the QFeatures class.
 #' \code{\link[SummarizedExperiment]{SummarizedExperiment}} for details on the underlying data structure.
-#'
-#' @references
 #' 
+#' @references
+#' #TODO: Bruker metaboscape site 
+#' #TODO: Ordering ?
 readMetaboscape <- function(file, version){
   
   table <- read_xlsx(file)
@@ -98,4 +100,4 @@ readMetaboscape <- function(file, version){
 }
 
 qf <- readMetaboscape("data/rye_test_data.xlsx")
-a <- assay(qf)
+

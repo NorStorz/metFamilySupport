@@ -1,5 +1,5 @@
-library(QFeatures)
-source("R/readMetaboScape.R") 
+#library(QFeatures)
+#source("R/readMetaboScape.R") 
 
 
 qf <- readMetaboscape("data/rye_test_data.xlsx")
@@ -7,7 +7,6 @@ qf <- readMetaboscape("data/rye_test_data.xlsx")
 test_that("Sum of Intensities is correct", {
   sumQf <- sum(colSums(assay(qf)))
   expect_equal(sumQf,307716661)
-  
 })
 
 test_that("Number of Rows and Columns are correct", {
