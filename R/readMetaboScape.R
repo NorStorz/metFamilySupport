@@ -100,4 +100,4 @@ readMetaboscape <- function(file, version){
 }
 
 qf <- readMetaboscape("data/rye_test_data.xlsx")
-
+#Todo benennung der namen mit leerzeichen ? read openxlsx r

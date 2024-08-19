@@ -26,12 +26,13 @@ parsePeakAbundanceMatrix <- function(qfeatures,
       print(paste("Parsing MS1 file content...", sep = ""))
     } 
   }
+  rm(list=ls())
   
   dataFrameAll <- read.table(filePeakMatrix, header=FALSE, sep = "\t", as.is=TRUE, quote = "\"", check.names = FALSE, comment.char = "")
-  
-  
+  source("R/readMSDial.R")
+  qfeatures <- readMSDial("data/Metabolite_profile_showcase.txt")
   #oldFormat <- max(which(dataFrameAll[1:5, 1] == "")) == 3
-  header_rowNumber <- ncol(colData(qf))+1 
+  header_rowNumber <- ncol(colData(qfeatures))+1 
   cols_to_exclude <- c("Reference RT","Reference m/z","Comment",
                        "Manually modified for quantification",
                        "Total score","RT similarity","Average","Stdev") 
@@ -42,28 +43,33 @@ parsePeakAbundanceMatrix <- function(qfeatures,
   
   cols_to_keep <- which(!(rawDataFrameHeader[header_rowNumber, ] %in% cols_to_exclude))
   # which(!(colnames(rowdata) %in% cols_to_exclude)) # konkatenieren mit Assay colnames ?
+  load("data/matrix_data/dataFrameHeader.RData")
+  oldDataFrameHeader <- dataFrameHeader  
+
   dataFrameHeader <-rawDataFrameHeader[cols_to_keep]
   
   
   #dataFrame <- dataFrameAll[(header_rowNumber + 1):nrow(dataFrameAll), cols_to_keep] #coldata mit assay ?
   
   #combine rowData with assay 
-  dataFrame <- cbind(rowData(qf)[[1]] ,assay(qf))
+  load("data/matrix_data/dataFrame.RData")
+  oldDataFrame <- dataFrame
+  
+  dataFrame <- cbind(rowData(qfeatures)[[1]] ,assay(qfeatures))
 
   dataFrame <- df[,cols_to_keep]
-  
+
   nrows <- header_rowNumber
-  ncols <- ncols(rowData(qf))
+  ncols <- ncols(rowData(qfeatures))
   empty <- as.data.frame(matrix("", nrow = nrows, ncol = ncols))
-  coldata <- t(as.data.frame(colData(qf)))
+  coldata <- t(as.data.frame(colData(qfeatures)))
   rownames(empty) <- rownames(coldata)
-  colnames(empty) <- colnames(rowData(qf[[1]]))
-  
-  #dataFrameHeader <- cbind(empty, coldata)
+  colnames(empty) <- colnames(rowData(qfeatures[[1]]))
+  dataFrameHeader <- cbind(empty, coldata)
   
  
-  colnames(dataFrame) <- colnames(rowData(qf[[1]]))
-  ncol(rowData(qf)[[1]]) # TODO: colnames wie viele wann benennen?
+  colnames(dataFrame) <- colnames(rowData(qfeatures[[1]]))
+  ncol(rowData(qfeatures)[[1]]) # TODO: colnames wie viele wann benennen?
   numberOfPrecursors <- nrow(dataFrame)
   numberOfPrecursorsPrior <- numberOfPrecursors 
   
@@ -75,7 +81,7 @@ parsePeakAbundanceMatrix <- function(qfeatures,
     dataColumnStartEndIndeces <- c(columnIndexEndOfAnnotation + 1, ncol(dataFrame))
     numberOfDataColumns <- dataColumnStartEndIndeces[[2]] - dataColumnStartEndIndeces[[1]] + 1
     dataColumnNames <- colnames(dataFrame)[dataColumnStartEndIndeces[[1]]:dataColumnStartEndIndeces[[2]]]
-    
+    #TODO: DataFrameheader loswerden
     sampleClass          <- dataFrameHeader[1, (columnIndexEndOfAnnotation + 1):ncol(dataFrameHeader)]
     sampleType           <- dataFrameHeader[2, (columnIndexEndOfAnnotation + 1):ncol(dataFrameHeader)]
     sampleInjectionOrder <- dataFrameHeader[3, (columnIndexEndOfAnnotation + 1):ncol(dataFrameHeader)]
