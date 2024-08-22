@@ -1,4 +1,4 @@
-library(readxl)
+library(openxlsx2)
 library(dplyr)
 library(purrr)
 library(QFeatures)
@@ -59,26 +59,28 @@ library(SummarizedExperiment)
 #' @references
 #' #TODO: Bruker metaboscape site 
 #' #TODO: Ordering ?
+#' 
+file <- "data/rye_test_data.xlsx"
 readMetaboscape <- function(file, version){
   
   table <- read_xlsx(file)
-  
+  rownames(table) <- table[,1]
   colnames <- colnames(table)
   colIdsSamples <- grepl("\\d+$", colnames)
   
   startOfSamples <- which(colIdsSamples)[1]
   
   # Extract ids and counts data
-  ids <- table[[1]]
-  countsRaw <- table[,colIdsSamples]
-  countsNumeric <- countsRaw %>%
-    mutate(across(everything(), ~ as.numeric(.)))
+  ids <- table[,1]
+  countsRaw     <- table[,colIdsSamples]
+  countsNumeric <- apply(countsRaw, 2, as.numeric)
   counts <- as.matrix(countsNumeric)
   rownames(counts) <- ids
   
   # Extract rowData
-  rowData <- DataFrame(table[,!colIdsSamples])
-  
+  rowData <- table[,!colIdsSamples]
+  rownames(rowData) <- ids 
+ 
   # Extract colData from sample Names
   sampleNames <- colnames(table[,colIdsSamples])
   colDataRaw <- sapply(sampleNames, function(x) {
@@ -86,14 +88,14 @@ readMetaboscape <- function(file, version){
     pos <- max(gregexpr("[^0-9]", x)[[1]])
       c(substr(x, 1, (pos - 1)), substr(x, pos + 1, nchar(x)))
   })
-  colData <- DataFrame("Injection order" = colDataRaw[2,],
+  colData <- data.frame("Injection order" = colDataRaw[2,],
                        "Sample name" = colDataRaw[1,])
                     
   # Create SummarizedExperiment object
   sumExp <- SummarizedExperiment(assays = list(counts = counts),
                                  rowData = rowData,
                                  colData = colData)
-
+  rownames(sumExp)
   # Create QFeatures object
   qf <- QFeatures(list(exampleAssay = sumExp), colData = colData(sumExp))
   qf

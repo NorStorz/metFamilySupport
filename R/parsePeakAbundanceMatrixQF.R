@@ -19,6 +19,7 @@ parsePeakAbundanceMatrix <- function(qfeatures,
                                      progress=FALSE)
 {
   ## read file
+
   if(!is.na(progress)) {
     if(progress) {
       incProgress(amount = 0.1, detail = paste("Parsing MS1 file content...", sep = ""))
@@ -30,9 +31,8 @@ parsePeakAbundanceMatrix <- function(qfeatures,
   
   dataFrameAll <- read.table(filePeakMatrix, header=FALSE, sep = "\t", as.is=TRUE, quote = "\"", check.names = FALSE, comment.char = "")
   source("R/readMSDial.R")
-  qfeatures <- readMSDial("data/Metabolite_profile_showcase.txt")
-  #oldFormat <- max(which(dataFrameAll[1:5, 1] == "")) == 3
-  header_rowNumber <- ncol(colData(qfeatures))+1 
+  
+  
   cols_to_exclude <- c("Reference RT","Reference m/z","Comment",
                        "Manually modified for quantification",
                        "Total score","RT similarity","Average","Stdev") 

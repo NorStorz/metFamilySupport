@@ -92,7 +92,3 @@ readMSDial <- function(file, version){
     qf
     ##TODO: name
   }
-  
- qf <- readMSDial("data/Metabolite_profile_showcase.txt")
- 
- 
