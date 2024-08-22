@@ -45,14 +45,20 @@ parsePeakAbundanceMatrix <- function(filePeakMatrix,
                                           table = dataFrameHeader1[1, ]), 
                                     na.rm = TRUE) #match mit class aus coldata
   
+  #if nrow(coldata(qfeatures)>0)
   if(ncol(dataFrame1) > columnIndexEndOfAnnotation){
-    dataColumnStartEndIndeces <- c(columnIndexEndOfAnnotation + 1, ncol(dataFrame1))
+    dataColumnStartEndIndeces <- c(columnIndexEndOfAnnotation + 1, ncol(dataFrame1)) #löschen
     numberOfDataColumns <- dataColumnStartEndIndeces[[2]] - dataColumnStartEndIndeces[[1]] + 1
+    #numberOfDataColumns <- nrow(coldata(qfeatures))
     dataColumnNames <- colnames(dataFrame1)[dataColumnStartEndIndeces[[1]]:dataColumnStartEndIndeces[[2]]]
     
     sampleClass          <- dataFrameHeader1[1, (columnIndexEndOfAnnotation + 1):ncol(dataFrameHeader1)]
+    #sampleClass          <- colData(qfeatures)$Class
     sampleType           <- dataFrameHeader1[2, (columnIndexEndOfAnnotation + 1):ncol(dataFrameHeader1)]
+    #sampleType           <- colData(qfeatures)$Type
     sampleInjectionOrder <- dataFrameHeader1[3, (columnIndexEndOfAnnotation + 1):ncol(dataFrameHeader1)]
+    #sampleInjectionOrder<- colData(qfmsdial)$"Injection order"
+    
     batchID              <- NULL
     if(!oldFormat)
       batchID            <- dataFrameHeader1[4, (columnIndexEndOfAnnotation + 1):ncol(dataFrameHeader1)]

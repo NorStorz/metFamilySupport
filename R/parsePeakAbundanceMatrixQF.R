@@ -37,62 +37,30 @@ parsePeakAbundanceMatrix <- function(qfeatures,
                        "Manually modified for quantification",
                        "Total score","RT similarity","Average","Stdev") 
   
-  
-  rawDataFrameHeader <- dataFrameAll[1:header_rowNumber, ]
+  cols_to_keep <- which(!colnames(rowData(qfmsdial))[[1]] %in% cols_to_exclude)
 
-  
-  cols_to_keep <- which(!(rawDataFrameHeader[header_rowNumber, ] %in% cols_to_exclude))
-  # which(!(colnames(rowdata) %in% cols_to_exclude)) # konkatenieren mit Assay colnames ?
-  load("data/matrix_data/dataFrameHeader.RData")
-  oldDataFrameHeader <- dataFrameHeader  
+  dataFrame <- cbind(rowData(qfeatures)[[1]][,cols_to_keep] ,assay(qfeatures))
 
-  dataFrameHeader <-rawDataFrameHeader[cols_to_keep]
-  
-  
-  #dataFrame <- dataFrameAll[(header_rowNumber + 1):nrow(dataFrameAll), cols_to_keep] #coldata mit assay ?
-  
-  #combine rowData with assay 
-  load("data/matrix_data/dataFrame.RData")
-  oldDataFrame <- dataFrame
-  
-  dataFrame <- cbind(rowData(qfeatures)[[1]] ,assay(qfeatures))
-
-  dataFrame <- df[,cols_to_keep]
-
-  nrows <- header_rowNumber
-  ncols <- ncols(rowData(qfeatures))
-  empty <- as.data.frame(matrix("", nrow = nrows, ncol = ncols))
-  coldata <- t(as.data.frame(colData(qfeatures)))
-  rownames(empty) <- rownames(coldata)
-  colnames(empty) <- colnames(rowData(qfeatures[[1]]))
-  dataFrameHeader <- cbind(empty, coldata)
-  
- 
-  colnames(dataFrame) <- colnames(rowData(qfeatures[[1]]))
-  ncol(rowData(qfeatures)[[1]]) # TODO: colnames wie viele wann benennen?
+  ncol(rowData(qfeatures)[[1]]) 
   numberOfPrecursors <- nrow(dataFrame)
   numberOfPrecursorsPrior <- numberOfPrecursors 
   
-  columnIndexEndOfAnnotation <- max(match(x = "Class", 
-                                          table = dataFrameHeader[1, ]), 
-                                    na.rm = TRUE)
+
   
-  if(ncol(dataFrame) > columnIndexEndOfAnnotation){
-    dataColumnStartEndIndeces <- c(columnIndexEndOfAnnotation + 1, ncol(dataFrame))
-    numberOfDataColumns <- dataColumnStartEndIndeces[[2]] - dataColumnStartEndIndeces[[1]] + 1
-    dataColumnNames <- colnames(dataFrame)[dataColumnStartEndIndeces[[1]]:dataColumnStartEndIndeces[[2]]]
-    #TODO: DataFrameheader loswerden
-    sampleClass          <- dataFrameHeader[1, (columnIndexEndOfAnnotation + 1):ncol(dataFrameHeader)]
-    sampleType           <- dataFrameHeader[2, (columnIndexEndOfAnnotation + 1):ncol(dataFrameHeader)]
-    sampleInjectionOrder <- dataFrameHeader[3, (columnIndexEndOfAnnotation + 1):ncol(dataFrameHeader)]
-    batchID              <- NULL
-    if(!oldFormat)
-      batchID            <- dataFrameHeader[4, (columnIndexEndOfAnnotation + 1):ncol(dataFrameHeader)]
-  } else {
+  if(nrow(colData(qfeatures))>0){
+    
+    dataColumnStartEndIndeces <- 1
+    numberOfDataColumns   <- nrow(colData(qfeatures))
+    sampleClass           <- colData(qfeatures)$Class
+    sampleType            <- colData(qfeatures)$Type
+    sampleInjectionOrder  <- colData(qfmsdial)$"Injection order"
+    batchID               <- NULL
+    if(! is.null(colData(qfeatures)$BatchID))
+      batchID            <- colData(qfeatures)$BatchID
+    
+    }   else {
     dataColumnStartEndIndeces <- NULL
     numberOfDataColumns <- 0
-    dataColumnNames <- NULL
-    
     sampleClass          <- NULL
     sampleType           <- NULL
     sampleInjectionOrder <- NULL
