@@ -27,11 +27,6 @@ parsePeakAbundanceMatrix <- function(qfeatures,
       print(paste("Parsing MS1 file content...", sep = ""))
     } 
   }
-  rm(list=ls())
-  
-  dataFrameAll <- read.table(filePeakMatrix, header=FALSE, sep = "\t", as.is=TRUE, quote = "\"", check.names = FALSE, comment.char = "")
-  source("R/readMSDial.R")
-  
   
   cols_to_exclude <- c("Reference RT","Reference m/z","Comment",
                        "Manually modified for quantification",
