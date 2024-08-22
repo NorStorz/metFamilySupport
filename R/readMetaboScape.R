@@ -100,6 +100,3 @@ readMetaboscape <- function(file, version){
   qf <- QFeatures(list(exampleAssay = sumExp), colData = colData(sumExp))
   qf
 }
-
-qf <- readMetaboscape("data/rye_test_data.xlsx")
-#Todo benennung der namen mit leerzeichen ? read openxlsx r

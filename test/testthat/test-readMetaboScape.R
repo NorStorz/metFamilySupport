@@ -18,7 +18,5 @@ test_that("Number of Rows and Columns are correct", {
   # check if number of cols is identical
   ncolQf <- ncol(assay(qf))+ ncols(rowData(qf))
   expect_equal(as.integer(ncolQf), 73)
-  
+  #TODO: Alignment id 0 vs 1 
 })
-
-
